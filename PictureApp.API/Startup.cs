@@ -19,6 +19,7 @@ using Microsoft.AspNetCore.Diagnostics;
 using PictureApp.API.Data;
 using Microsoft.AspNetCore.Http;
 using PictureApp.API.Helpers;
+using AutoMapper;
 
 namespace PictureApp.API
 {
@@ -35,9 +36,15 @@ namespace PictureApp.API
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<DataContext>(x => x.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
+                .AddJsonOptions(opt => {
+                    opt.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
+                });         //To ignore self referencing loops in JSON
             services.AddCors();
+            services.AddAutoMapper();
+            services.AddTransient<Seed>();
             services.AddScoped<IAuthRepository, AuthRepository>();
+            services.AddScoped<IPictureRepository, PictureRepository>();
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options => {
                     options.TokenValidationParameters = new TokenValidationParameters
@@ -51,7 +58,7 @@ namespace PictureApp.API
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, Seed seeder)
         {
             if (env.IsDevelopment())
             {
@@ -75,6 +82,7 @@ namespace PictureApp.API
             }
 
             //app.UseHttpsRedirection();
+            //seeder.SeedUsers();   - Uncomment only when you need to seed db
             app.UseCors(x => x.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
             app.UseAuthentication();
             app.UseMvc();
