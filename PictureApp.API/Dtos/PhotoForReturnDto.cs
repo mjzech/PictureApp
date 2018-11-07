@@ -1,7 +1,8 @@
 using System;
 
-namespace PictureApp.API.Models
-{     public class Photo
+namespace PictureApp.API.Dtos
+{
+    public class PhotoForReturnDto
     {
         public int Id { get; set; }
         public string Url { get; set; }
@@ -9,8 +10,5 @@ namespace PictureApp.API.Models
         public DateTime DateAdded { get; set; }
         public bool IsMain {get; set;}
         public string PublicId { get; set; }
-        public User User { get; set; }  //The reciprical relation from the user class
-        public int UserId { get; set; }  //The reciprical relation from the user class
-
     }
 }

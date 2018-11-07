@@ -11,6 +11,7 @@ namespace PictureApp.API.Data
          Task<bool> SaveAllAsync();
          Task<IEnumerable<User>> GetUsers();
          Task<User> GetUser(int id);
+         Task<Photo> GetPhoto(int id);
 
     }
 }
